@@ -29,6 +29,7 @@ model Pet {
   bathingRecords        BathingRecord[]
   vaccineRecords        VaccineRecord[]
   weightRecords         WeightRecord[]
+  reminderSettings      ReminderSettings[]
 
   @@map("pets")
 }
