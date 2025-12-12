@@ -21,6 +21,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // Debug: Log database URL (first 50 chars only for security)
+    console.log('DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...')
+    console.log('DATABASE_URL starts with:', process.env.DATABASE_URL?.substring(0, 20))
+
     const body = await request.json()
 
     const pet = await prisma.pet.create({
