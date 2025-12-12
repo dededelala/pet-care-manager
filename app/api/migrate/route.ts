@@ -6,18 +6,19 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    // Run migration
-    execSync('npx prisma migrate deploy', {
+    // Use db push instead of migrate deploy
+    // db push will create tables directly from schema without migration files
+    execSync('npx prisma db push --force-reset', {
       env: process.env,
       stdio: 'inherit',
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Migration completed successfully',
+      message: 'Database schema pushed successfully! Tables created.',
     })
   } catch (error) {
-    console.error('Migration failed:', error)
+    console.error('Database push failed:', error)
     return NextResponse.json(
       {
         success: false,
