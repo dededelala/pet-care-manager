@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
@@ -15,22 +15,38 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Form submitted', { email }) // 调试日志
+
     setError('')
     setLoading(true)
 
     try {
+      console.log('Calling signIn...') // 调试日志
+
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: true,
+        redirect: false, // 改为 false，手动处理
         callbackUrl: '/'
       })
 
-      // 如果 redirect: true，NextAuth 会自动跳转
-      // 如果 redirect: false，需要手动处理跳转
+      console.log('SignIn result:', result) // 调试日志
+
+      if (result?.error) {
+        console.error('SignIn error:', result.error) // 调试日志
+        setError('邮箱或密码错误')
+        setLoading(false)
+        return
+      }
+
+      // 等待一小段时间让 session 创建
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      console.log('Redirecting to home...') // 调试日志
+      router.push('/')
     } catch (error) {
-      console.error('Login error:', error)
-      setError('登录失败，请检查邮箱和密码')
+      console.error('Login catch error:', error) // 调试日志
+      setError('登录失败，请稍后重试')
       setLoading(false)
     }
   }
