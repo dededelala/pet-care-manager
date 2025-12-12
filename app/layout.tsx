@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 min-h-screen`}
+        suppressHydrationWarning
       >
         {children}
       </body>

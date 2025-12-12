@@ -56,7 +56,7 @@ export default function WeightChart({ records, petName }: WeightChartProps) {
     datasets: [
       {
         label: `体重 (${sortedRecords[0].unit})`,
-        data: sortedRecords.map((record) => record.weight),
+        data: sortedRecords.map((record) => Number(record.weight.toFixed(2))),
         borderColor: 'rgb(236, 72, 153)',
         backgroundColor: 'rgba(236, 72, 153, 0.1)',
         tension: 0.4,
@@ -90,7 +90,7 @@ export default function WeightChart({ records, petName }: WeightChartProps) {
         callbacks: {
           label: function (context: any) {
             const record = sortedRecords[context.dataIndex]
-            return `${record.weight}${record.unit} (${format(
+            return `${Number(record.weight.toFixed(2))}${record.unit} (${format(
               new Date(record.date),
               'yyyy年MM月dd日',
               { locale: zhCN }
@@ -104,7 +104,7 @@ export default function WeightChart({ records, petName }: WeightChartProps) {
         beginAtZero: false,
         ticks: {
           callback: function (value: any) {
-            return value + sortedRecords[0].unit
+            return Number(value.toFixed(2)) + sortedRecords[0].unit
           },
         },
       },
