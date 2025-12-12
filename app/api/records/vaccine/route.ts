@@ -1,12 +1,22 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const petId = searchParams.get('petId')
 
-    const where: any = {}
+    const where: any = { userId: session.user.id }
     if (petId) {
       where.petId = petId
     }
@@ -33,10 +43,20 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
 
     const record = await prisma.vaccineRecord.create({
       data: {
+        userId: session.user.id,
         petId: body.petId,
         date: new Date(body.date),
         type: body.type,

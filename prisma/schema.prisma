@@ -60,6 +60,7 @@ model Pet {
 // 外驱记录模型
 model DewormingRecord {
   id          String    @id @default(cuid())
+  userId      String // 关联的用户
   petId       String
   date        DateTime // 驱虫日期
   brand       String // 品牌
@@ -70,12 +71,14 @@ model DewormingRecord {
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("deworming_records")
 }
 
 // 内驱记录模型
 model InternalDewormingRecord {
   id          String    @id @default(cuid())
+  userId      String // 关联的用户
   petId       String
   date        DateTime // 驱虫日期
   brand       String // 品牌
@@ -86,12 +89,14 @@ model InternalDewormingRecord {
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("internal_deworming_records")
 }
 
 // 洗澡记录模型
 model BathingRecord {
   id        String   @id @default(cuid())
+  userId    String // 关联的用户
   petId     String
   date      DateTime // 洗澡日期
   products  String? // 洗护产品
@@ -101,12 +106,14 @@ model BathingRecord {
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("bathing_records")
 }
 
 // 疫苗记录模型
 model VaccineRecord {
   id          String    @id @default(cuid())
+  userId      String // 关联的用户
   petId       String
   date        DateTime // 接种日期
   type        String // 疫苗类型
@@ -117,12 +124,14 @@ model VaccineRecord {
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("vaccine_records")
 }
 
 // 体重记录模型
 model WeightRecord {
   id        String   @id @default(cuid())
+  userId    String // 关联的用户
   petId     String
   date      DateTime // 测量日期
   weight    Float // 体重
@@ -133,6 +142,7 @@ model WeightRecord {
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("weight_records")
 }
 
