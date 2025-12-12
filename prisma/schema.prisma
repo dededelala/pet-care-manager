@@ -111,3 +111,21 @@ model WeightRecord {
 
   @@map("weight_records")
 }
+
+// 提醒设置模型
+model ReminderSettings {
+  id          String   @id @default(cuid())
+  petId       String   // 关联的宠物
+  type        String   // 提醒类型: 'deworming', 'internal_deworming', 'vaccine', 'bathing'
+  email       String   // 提醒邮箱
+  intervalDays Int     // 提醒周期（天）
+  isEnabled   Boolean  @default(true) // 是否启用提醒
+  lastSent    DateTime? // 上次发送时间
+  nextDueDate DateTime? // 下次到期日期
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@map("reminder_settings")
+}

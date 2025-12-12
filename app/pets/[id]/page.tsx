@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import RecordCard from '@/components/RecordCard'
 import Link from 'next/link'
-import { Calendar, ArrowLeft, Edit } from 'lucide-react'
+import { Calendar, ArrowLeft, Edit, Bell } from 'lucide-react'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 
@@ -196,6 +196,25 @@ export default function PetPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* 提醒设置 */}
+        <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl border border-orange-200 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">🔔 邮件提醒</h3>
+              <p className="text-sm text-gray-600">
+                设置邮件提醒，及时关注 {pet.name} 的健康护理
+              </p>
+            </div>
+            <Link
+              href={`/pets/reminders?petId=${pet.id}`}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all"
+            >
+              <Bell className="h-5 w-5" />
+              设置提醒
+            </Link>
+          </div>
         </div>
 
         {/* 快速操作 */}
