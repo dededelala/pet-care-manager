@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs'
 
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
   session: {
     strategy: 'jwt' as const,
   },
