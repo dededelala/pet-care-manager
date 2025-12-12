@@ -22,22 +22,15 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: '/'
       })
 
-      if (result?.error) {
-        setError('Invalid email or password')
-        return
-      }
-
-      // 获取当前会话并跳转
-      const session = await getSession()
-      if (session) {
-        router.push('/')
-      }
+      // 如果 redirect: true，NextAuth 会自动跳转
+      // 如果 redirect: false，需要手动处理跳转
     } catch (error) {
-      setError('An error occurred. Please try again.')
-    } finally {
+      console.error('Login error:', error)
+      setError('登录失败，请检查邮箱和密码')
       setLoading(false)
     }
   }
