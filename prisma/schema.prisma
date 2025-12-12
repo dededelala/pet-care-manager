@@ -12,149 +12,149 @@ datasource db {
 
 // 用户模型
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
+  id            String    @id @default(cuid())
+  email         String    @unique
   name          String?
-  password      String   // 加密后的密码
+  password      String // 加密后的密码
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // 关联数据
-  pets              Pet[]
-  reminderSettings  ReminderSettings[]
+  pets             Pet[]
+  reminderSettings ReminderSettings[]
 
   @@map("users")
 }
 
 // 宠物基础信息模型
 model Pet {
-  id          String   @id @default(cuid())
-  userId      String   // 关联的用户
-  name        String   // 宠物名字
-  breed       String?  // 品种
-  birthday    DateTime? // 生日
-  gender      String?  // 性别 (公/母)
-  color       String?  // 毛色
-  photo       String?  // 照片URL
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String    @id @default(cuid())
+  userId    String // 关联的用户
+  name      String // 宠物名字
+  breed     String? // 品种
+  birthday  DateTime? // 生日
+  gender    String? // 性别 (公/母)
+  color     String? // 毛色
+  photo     String? // 照片URL
+  notes     String? // 备注
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // 关联的用户
-  user                User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 关联的健康记录
-  dewormingRecords      DewormingRecord[]
+  dewormingRecords         DewormingRecord[]
   internalDewormingRecords InternalDewormingRecord[]
-  bathingRecords        BathingRecord[]
-  vaccineRecords        VaccineRecord[]
-  weightRecords         WeightRecord[]
-  reminderSettings      ReminderSettings[]
+  bathingRecords           BathingRecord[]
+  vaccineRecords           VaccineRecord[]
+  weightRecords            WeightRecord[]
+  reminderSettings         ReminderSettings[]
 
-  @@map("pets")
   @@index([userId])
+  @@map("pets")
 }
 
 // 外驱记录模型
 model DewormingRecord {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   petId       String
   date        DateTime // 驱虫日期
-  brand       String   // 品牌
-  dosage      String   // 剂量
+  brand       String // 品牌
+  dosage      String // 剂量
   nextDueDate DateTime? // 下次到期日
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
+  notes       String? // 备注
+  createdAt   DateTime  @default(now())
 
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("deworming_records")
 }
 
 // 内驱记录模型
 model InternalDewormingRecord {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   petId       String
   date        DateTime // 驱虫日期
-  brand       String   // 品牌
-  dosage      String   // 剂量
+  brand       String // 品牌
+  dosage      String // 剂量
   nextDueDate DateTime? // 下次到期日
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
+  notes       String? // 备注
+  createdAt   DateTime  @default(now())
 
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("internal_deworming_records")
 }
 
 // 洗澡记录模型
 model BathingRecord {
-  id          String   @id @default(cuid())
-  petId       String
-  date        DateTime // 洗澡日期
-  products    String?  // 洗护产品
-  location    String?  // 洗澡地点
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  petId     String
+  date      DateTime // 洗澡日期
+  products  String? // 洗护产品
+  location  String? // 洗澡地点
+  notes     String? // 备注
+  createdAt DateTime @default(now())
 
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("bathing_records")
 }
 
 // 疫苗记录模型
 model VaccineRecord {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   petId       String
   date        DateTime // 接种日期
-  type        String   // 疫苗类型
-  institution String?  // 接种机构
+  type        String // 疫苗类型
+  institution String? // 接种机构
   nextDueDate DateTime? // 下次接种日
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
+  notes       String? // 备注
+  createdAt   DateTime  @default(now())
 
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("vaccine_records")
 }
 
 // 体重记录模型
 model WeightRecord {
-  id          String   @id @default(cuid())
-  petId       String
-  date        DateTime // 测量日期
-  weight      Float    // 体重
-  unit        String   @default("kg") // 单位 (kg/g)
-  location    String?  // 测量地点
-  notes       String?  // 备注
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  petId     String
+  date      DateTime // 测量日期
+  weight    Float // 体重
+  unit      String   @default("kg") // 单位 (kg/g)
+  location  String? // 测量地点
+  notes     String? // 备注
+  createdAt DateTime @default(now())
 
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("weight_records")
 }
 
 // 提醒设置模型
 model ReminderSettings {
-  id          String   @id @default(cuid())
-  userId      String   // 关联的用户
-  petId       String   // 关联的宠物
-  type        String   // 提醒类型: 'deworming', 'internal_deworming', 'vaccine', 'bathing'
-  email       String   // 提醒邮箱
-  intervalDays Int     // 提醒周期（天）
-  isEnabled   Boolean  @default(true) // 是否启用提醒
-  lastSent    DateTime? // 上次发送时间
-  nextDueDate DateTime? // 下次到期日期
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String    @id @default(cuid())
+  userId       String // 关联的用户
+  petId        String // 关联的宠物
+  type         String // 提醒类型: 'deworming', 'internal_deworming', 'vaccine', 'bathing'
+  email        String // 提醒邮箱
+  intervalDays Int // 提醒周期（天）
+  isEnabled    Boolean   @default(true) // 是否启用提醒
+  lastSent     DateTime? // 上次发送时间
+  nextDueDate  DateTime? // 下次到期日期
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   // 关联的用户和宠物
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet  Pet  @relation(fields: [petId], references: [id], onDelete: Cascade)
 
-  @@map("reminder_settings")
   @@index([userId])
   @@index([petId])
+  @@map("reminder_settings")
 }
