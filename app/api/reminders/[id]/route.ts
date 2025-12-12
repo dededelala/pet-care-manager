@@ -1,13 +1,25 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params
+
     const reminder = await prisma.reminderSettings.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         pet: {
           select: {
@@ -37,10 +49,20 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
+    const { id } = await params
 
     // 如果更新了间隔天数，重新计算下次到期日期
     const updateData: any = {
@@ -56,7 +78,7 @@ export async function PUT(
     }
 
     const reminder = await prisma.reminderSettings.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         pet: {
@@ -80,11 +102,22 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params
+
     await prisma.reminderSettings.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })

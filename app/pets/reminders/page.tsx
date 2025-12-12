@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ const REMINDER_TYPES = [
   { value: 'bathing', label: '洗澡', icon: '🛁', color: 'green' },
 ] as const
 
-export default function RemindersPage() {
+function RemindersContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const petId = searchParams.get('petId')
@@ -446,5 +446,20 @@ export default function RemindersPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function RemindersPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen">
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-gray-600">加载中...</div>
+        </div>
+      </main>
+    }>
+      <RemindersContent />
+    </Suspense>
   )
 }
