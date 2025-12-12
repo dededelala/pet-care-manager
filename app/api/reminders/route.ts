@@ -1,12 +1,25 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { authConfig } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authConfig)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const petId = searchParams.get('petId')
 
-    const where: any = {}
+    const where: any = {
+      userId: session.user.id,
+    }
     if (petId) {
       where.petId = petId
     }
@@ -38,6 +51,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authConfig)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
 
     // 计算下次到期日期
@@ -46,6 +68,7 @@ export async function POST(request: Request) {
 
     const reminder = await prisma.reminderSettings.create({
       data: {
+        userId: session.user.id,
         petId: body.petId,
         type: body.type,
         email: body.email,

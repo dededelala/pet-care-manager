@@ -1,9 +1,23 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { authConfig } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const session = await getServerSession(authConfig)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const pets = await prisma.pet.findMany({
+      where: {
+        userId: session.user.id,
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -21,10 +35,20 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authConfig)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
 
     const pet = await prisma.pet.create({
       data: {
+        userId: session.user.id,
         name: body.name,
         breed: body.breed || null,
         birthday: body.birthday ? new Date(body.birthday) : null,

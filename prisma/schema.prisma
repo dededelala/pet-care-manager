@@ -10,9 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 用户模型
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  password      String   // 加密后的密码
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 关联数据
+  pets              Pet[]
+  reminderSettings  ReminderSettings[]
+
+  @@map("users")
+}
+
 // 宠物基础信息模型
 model Pet {
   id          String   @id @default(cuid())
+  userId      String   // 关联的用户
   name        String   // 宠物名字
   breed       String?  // 品种
   birthday    DateTime? // 生日
@@ -23,6 +42,9 @@ model Pet {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // 关联的用户
+  user                User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // 关联的健康记录
   dewormingRecords      DewormingRecord[]
   internalDewormingRecords InternalDewormingRecord[]
@@ -32,6 +54,7 @@ model Pet {
   reminderSettings      ReminderSettings[]
 
   @@map("pets")
+  @@index([userId])
 }
 
 // 外驱记录模型
@@ -116,6 +139,7 @@ model WeightRecord {
 // 提醒设置模型
 model ReminderSettings {
   id          String   @id @default(cuid())
+  userId      String   // 关联的用户
   petId       String   // 关联的宠物
   type        String   // 提醒类型: 'deworming', 'internal_deworming', 'vaccine', 'bathing'
   email       String   // 提醒邮箱
@@ -126,7 +150,11 @@ model ReminderSettings {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // 关联的用户和宠物
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@map("reminder_settings")
+  @@index([userId])
+  @@index([petId])
 }
