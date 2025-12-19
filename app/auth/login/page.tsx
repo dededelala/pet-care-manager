@@ -26,7 +26,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false, // 改为 false，手动处理
+        redirect: false, // 手动处理
         callbackUrl: '/'
       })
 
@@ -39,11 +39,9 @@ export default function LoginPage() {
         return
       }
 
-      // 等待一小段时间让 session 创建
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      console.log('Redirecting to home...') // 调试日志
-      router.push('/')
+      // 使用 window.location 强制跳转（更可靠）
+      console.log('Redirecting to home using window.location...') // 调试日志
+      window.location.href = '/'
     } catch (error) {
       console.error('Login catch error:', error) // 调试日志
       setError('登录失败，请稍后重试')
