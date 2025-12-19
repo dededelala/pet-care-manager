@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Heart } from 'lucide-react'
@@ -21,27 +21,17 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      console.log('Calling signIn...') // 调试日志
+      console.log('Calling signIn with auto-redirect...') // 调试日志
 
-      const result = await signIn('credentials', {
+      // 使用 NextAuth 自动重定向
+      await signIn('credentials', {
         email,
         password,
-        redirect: false, // 手动处理
+        redirect: true,
         callbackUrl: '/'
       })
 
-      console.log('SignIn result:', result) // 调试日志
-
-      if (result?.error) {
-        console.error('SignIn error:', result.error) // 调试日志
-        setError('邮箱或密码错误')
-        setLoading(false)
-        return
-      }
-
-      // 使用 window.location 强制跳转（更可靠）
-      console.log('Redirecting to home using window.location...') // 调试日志
-      window.location.href = '/'
+      // redirect: true 会自动跳转，不需要手动处理
     } catch (error) {
       console.error('Login catch error:', error) // 调试日志
       setError('登录失败，请稍后重试')
