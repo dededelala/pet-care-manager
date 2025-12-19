@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { jwtVerify } from 'jose'
+import { auth } from '@/lib/auth'
 
 export default async function middleware(req: Request) {
   const { nextUrl } = req as any
@@ -11,45 +11,19 @@ export default async function middleware(req: Request) {
                        nextUrl.pathname.startsWith('/favicon.ico')
 
   if (!isPublicPath) {
-    const token = getTokenFromRequest(req)
+    // 使用 NextAuth 5 内置的 auth() 函数
+    const session = await auth()
 
-    if (!token) {
+    if (!session) {
       const signInUrl = new URL('/auth/login', nextUrl)
       signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
       return NextResponse.redirect(signInUrl)
     }
 
-    try {
-      // 验证JWT token
-      const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'your-secret-key')
-      await jwtVerify(token, secret)
-      return NextResponse.next()
-    } catch (error) {
-      // Token无效，重定向到登录页
-      const signInUrl = new URL('/auth/login', nextUrl)
-      signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
-      return NextResponse.redirect(signInUrl)
-    }
+    return NextResponse.next()
   }
 
   return NextResponse.next()
-}
-
-function getTokenFromRequest(req: Request): string | null {
-  // 从Cookie中获取token
-  const cookieHeader = req.headers.get('cookie')
-  if (!cookieHeader) return null
-
-  const cookies = cookieHeader.split(';').reduce((acc: any, cookie) => {
-    const [name, value] = cookie.trim().split('=')
-    acc[name] = value
-    return acc
-  }, {})
-
-  // NextAuth 5 使用不同的cookie名称
-  return cookies['next-auth.session-token'] ||
-         cookies['__Secure-next-auth.session-token'] ||
-         null
 }
 
 export const config = {
