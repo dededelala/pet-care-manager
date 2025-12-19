@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 
 export default async function middleware(req: Request) {
   const { nextUrl } = req as any
@@ -11,10 +10,20 @@ export default async function middleware(req: Request) {
                        nextUrl.pathname.startsWith('/favicon.ico')
 
   if (!isPublicPath) {
-    // 使用 NextAuth 5 内置的 auth() 函数
-    const session = await auth()
+    // 简化版本：不导入 auth 库，检查 cookies
+    const cookieHeader = req.headers.get('cookie')
 
-    if (!session) {
+    if (!cookieHeader) {
+      const signInUrl = new URL('/auth/login', nextUrl)
+      signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
+      return NextResponse.redirect(signInUrl)
+    }
+
+    // 检查是否有 NextAuth session cookie
+    const hasSession = cookieHeader.includes('next-auth.session-token') ||
+                      cookieHeader.includes('__Secure-next-auth.session-token')
+
+    if (!hasSession) {
       const signInUrl = new URL('/auth/login', nextUrl)
       signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
       return NextResponse.redirect(signInUrl)
